@@ -215,7 +215,15 @@ class Plugin {
 			? $this->sanitize_ip_list( wp_unslash( $input['bypass_ips'] ) )
 			: '';
 
-		$output['bypass_token'] = $current['bypass_token'];
+		// update_option() esegue sempre il filtro sanitize_option_{option}, quindi questo
+		// metodo viene invocato anche dalla chiamata diretta in handle_regenerate_token(),
+		// non solo dal submit del form (che non include mai un campo bypass_token). Se il
+		// valore in ingresso ha il formato di un token valido lo si mantiene, altrimenti si
+		// preserva quello già salvato: così il form non lo tocca mai, ma "Regenerate link"
+		// riesce comunque a sostituirlo.
+		$output['bypass_token'] = ! empty( $input['bypass_token'] ) && is_string( $input['bypass_token'] ) && preg_match( '/^[A-Za-z0-9]{32}$/', $input['bypass_token'] )
+			? $input['bypass_token']
+			: $current['bypass_token'];
 
 		$output['schedule_enabled'] = ! empty( $input['schedule_enabled'] ) ? '1' : '0';
 		$output['schedule_start']   = ! empty( $input['schedule_start'] ) && is_string( $input['schedule_start'] ) ? $this->sanitize_datetime_local( wp_unslash( $input['schedule_start'] ) ) : '';
