@@ -1,0 +1,9 @@
+.git
+.gitignore
+.distignore
+.claude
+.DS_Store
+*.log
+node_modules
+composer.json
+composer.lock
