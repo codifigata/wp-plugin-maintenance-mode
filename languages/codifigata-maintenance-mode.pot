@@ -1,0 +1,148 @@
+# Copyright (C) 2026 Codifigata
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Codifigata - Maintenance Mode 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/codifigata-maintenance-mode\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-07-30T10:33:05+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.11.0\n"
+"X-Domain: codifigata-maintenance-mode\n"
+
+#. Plugin Name of the plugin
+#: codifigata-maintenance-mode.php
+msgid "Codifigata - Maintenance Mode"
+msgstr ""
+
+#. Description of the plugin
+#: codifigata-maintenance-mode.php
+msgid "Puts the site in maintenance mode with a real 503 response, a customizable maintenance page, role/IP bypass, scheduled activation, and a shareable secret preview link."
+msgstr ""
+
+#. Author of the plugin
+#: codifigata-maintenance-mode.php
+msgid "Codifigata"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:104
+msgid "Be right back"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:105
+msgid "We are currently performing scheduled maintenance. We will be back online shortly, thank you for your patience."
+msgstr ""
+
+#: codifigata-maintenance-mode.php:128
+#: codifigata-maintenance-mode.php:129
+#: codifigata-maintenance-mode.php:421
+msgid "Maintenance Mode"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:140
+msgid "Settings"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:161
+msgid "Maintenance mode"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:162
+msgid "Scheduled activation"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:163
+msgid "Page title"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:164
+msgid "Message"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:165
+msgid "Background color"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:166
+msgid "Text color"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:167
+msgid "Accent color"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:168
+msgid "Allowed roles"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:169
+msgid "Allowed IP addresses"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:170
+msgid "Secret preview link"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:273
+msgid "Enable maintenance mode now"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:276
+msgid "While enabled, visitors who are not allowed to bypass it will see the maintenance page with a real 503 (temporarily unavailable) response. Administrators always keep access."
+msgstr ""
+
+#: codifigata-maintenance-mode.php:287
+msgid "Automatically turn maintenance mode on and off on a schedule"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:290
+msgid "Start"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:293
+msgid "End"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:297
+msgid "Times use the site's timezone (Settings → General). Leave both empty to only control the mode manually with the toggle above."
+msgstr ""
+
+#: codifigata-maintenance-mode.php:353
+msgid "Used for the page title on the maintenance page."
+msgstr ""
+
+#: codifigata-maintenance-mode.php:363
+msgid "Administrators always have access. Select any additional role that should also be able to browse the site normally while maintenance mode is on."
+msgstr ""
+
+#: codifigata-maintenance-mode.php:383
+msgid "One IP address per line (IPv4 or IPv6). Visitors from these addresses can browse the site normally while maintenance mode is on."
+msgstr ""
+
+#: codifigata-maintenance-mode.php:401
+msgid "Regenerate link"
+msgstr ""
+
+#: codifigata-maintenance-mode.php:404
+msgid "Anyone who opens this link can browse the site while maintenance mode is on, without logging in — handy for sharing a preview with a client or teammate. Regenerating the link immediately invalidates the previous one."
+msgstr ""
+
+#: codifigata-maintenance-mode.php:424
+msgid "Maintenance mode is currently ON."
+msgstr ""
+
+#: codifigata-maintenance-mode.php:426
+msgid "Maintenance mode is currently OFF."
+msgstr ""
+
+#: codifigata-maintenance-mode.php:460
+msgid "A new secret preview link has been generated. The previous link no longer works."
+msgstr ""
+
+#: codifigata-maintenance-mode.php:467
+msgid "You are not allowed to do this."
+msgstr ""
