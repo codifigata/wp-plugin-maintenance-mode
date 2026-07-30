@@ -20,11 +20,12 @@ It is built to be simple and lightweight: no page builder, no bundled font/track
 
 * Real `503 Service Temporarily Unavailable` HTTP response with a `Retry-After` header, so search engines understand the site is only temporarily down instead of treating it as permanently gone.
 * `X-Robots-Tag: noindex` header on the maintenance page.
-* Customizable title, message, background color, text color, and accent color, with a native color picker.
+* Customizable title, message, background color, text color, and accent color, with a native color picker. Title and message can also be left empty for a minimal, text-free maintenance page.
 * Administrators always keep access; additional roles can be allowed from the settings.
 * Bypass by IP address (one per line).
 * Scheduled activation: set a start and end date/time and the plugin turns maintenance mode on and off automatically via WP-Cron.
 * Secret preview link: a unique URL that lets anyone (client, teammate) browse the site normally while maintenance mode is on, without logging in. It can be regenerated at any time to instantly invalidate the previous link.
+* Dashboard widget to see the current status and turn maintenance mode on/off with one click, without opening the settings page.
 * REST API, WP-Cron, AJAX and the login page are always excluded, so the rest of the site keeps working normally behind the scenes.
 
 **Developer filters**
@@ -89,9 +90,10 @@ On uninstall (not on simple deactivation), the plugin removes its settings and a
 = 1.0.0 =
 * First version published on WordPress.org.
 * Maintenance toggle with real 503 response and Retry-After header.
-* Customizable title, message, and colors.
+* Customizable title and message — both can be left empty for a minimal, text-free maintenance page — plus colors.
 * Bypass by role, IP address, and secret preview link.
 * Scheduled activation/deactivation via WP-Cron.
+* Dashboard widget to check the current status and toggle maintenance mode on/off with one click.
 * Developer filters: `cdfg_mm_bypass`, `cdfg_mm_visitor_ip`, `cdfg_mm_retry_after`, `cdfg_mm_maintenance_page_html`.
 
 == Upgrade Notice ==
