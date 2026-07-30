@@ -29,22 +29,22 @@ It is built to be simple and lightweight: no page builder, no bundled font/track
 
 **Developer filters**
 
-`cmm_bypass` (bool $bypass)
+`cdfg_mm_bypass` (bool $bypass)
 Final filter over the bypass decision. Return `true` to let the current visitor browse the site normally.
 
-`cmm_visitor_ip` (string $ip)
+`cdfg_mm_visitor_ip` (string $ip)
 Filters the IP address used for the IP bypass check. Useful if the site is behind a proxy/CDN and `REMOTE_ADDR` does not reflect the real visitor IP.
 
-`cmm_retry_after` (int $seconds)
+`cdfg_mm_retry_after` (int $seconds)
 Filters the value of the `Retry-After` header (default: 1 hour). Return `0` to omit the header.
 
-`cmm_maintenance_page_html` (string $html, array $settings)
+`cdfg_mm_maintenance_page_html` (string $html, array $settings)
 Filters the full HTML markup of the maintenance page before it is sent.
 
 Example:
 
 `
-add_filter( 'cmm_visitor_ip', function( $ip ) {
+add_filter( 'cdfg_mm_visitor_ip', function( $ip ) {
     return isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) : $ip;
 } );
 `
@@ -92,7 +92,7 @@ On uninstall (not on simple deactivation), the plugin removes its settings and a
 * Customizable title, message, and colors.
 * Bypass by role, IP address, and secret preview link.
 * Scheduled activation/deactivation via WP-Cron.
-* Developer filters: `cmm_bypass`, `cmm_visitor_ip`, `cmm_retry_after`, `cmm_maintenance_page_html`.
+* Developer filters: `cdfg_mm_bypass`, `cdfg_mm_visitor_ip`, `cdfg_mm_retry_after`, `cdfg_mm_maintenance_page_html`.
 
 == Upgrade Notice ==
 

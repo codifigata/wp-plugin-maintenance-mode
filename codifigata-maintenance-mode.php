@@ -14,23 +14,37 @@
  * @package Codifigata_Maintenance_Mode
  */
 
+namespace Codifigata\MaintenanceMode;
+
+use DateTime;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CMM_VERSION', '1.0.0' );
+/**
+ * Classe principale del plugin, racchiusa nel namespace Codifigata\MaintenanceMode.
+ *
+ * Il namespace elimina il rischio di collisione sul nome della classe con
+ * altri plugin. Le stringhe che PHP non può namespacizzare (costanti globali,
+ * nome dell'option, hook, cron, cookie) usano invece il prefisso "cdfg_mm_",
+ * radice condivisa con gli altri plugin Codifigata ma con suffisso di
+ * prodotto dedicato, per evitare collisioni sia con plugin di terzi sia tra
+ * i plugin Codifigata stessi.
+ */
+class Plugin {
 
-class CMM_Maintenance_Mode {
+	const VERSION = '1.0.0';
 
-	const OPTION_NAME       = 'cmm_settings';
-	const OPTION_GROUP      = 'cmm_settings_group';
-	const SETTINGS_SLUG     = 'cmm-settings';
-	const REGEN_ACTION      = 'cmm_regenerate_token';
-	const REGEN_NONCE       = 'cmm_regenerate_token_nonce';
-	const BYPASS_COOKIE     = 'cmm_bypass_token';
-	const PREVIEW_QUERY_ARG = 'cmm_preview';
-	const CRON_HOOK_START   = 'cmm_cron_start_maintenance';
-	const CRON_HOOK_END     = 'cmm_cron_end_maintenance';
+	const OPTION_NAME       = 'cdfg_mm_settings';
+	const OPTION_GROUP      = 'cdfg_mm_settings_group';
+	const SETTINGS_SLUG     = 'cdfg-mm-settings';
+	const REGEN_ACTION      = 'cdfg_mm_regenerate_token';
+	const REGEN_NONCE       = 'cdfg_mm_regenerate_token_nonce';
+	const BYPASS_COOKIE     = 'cdfg_mm_bypass_token';
+	const PREVIEW_QUERY_ARG = 'cdfg_mm_preview';
+	const CRON_HOOK_START   = 'cdfg_mm_cron_start_maintenance';
+	const CRON_HOOK_END     = 'cdfg_mm_cron_end_maintenance';
 
 	/** @var array|null Cache locale delle impostazioni, per non richiamare get_option() più volte per richiesta. */
 	private $settings = null;
@@ -142,18 +156,18 @@ class CMM_Maintenance_Mode {
 			)
 		);
 
-		add_settings_section( 'cmm_main_section', '', '__return_false', self::SETTINGS_SLUG );
+		add_settings_section( 'cdfg_mm_main_section', '', '__return_false', self::SETTINGS_SLUG );
 
-		add_settings_field( 'cmm_status', __( 'Maintenance mode', 'codifigata-maintenance-mode' ), array( $this, 'render_field_status' ), self::SETTINGS_SLUG, 'cmm_main_section' );
-		add_settings_field( 'cmm_schedule', __( 'Scheduled activation', 'codifigata-maintenance-mode' ), array( $this, 'render_field_schedule' ), self::SETTINGS_SLUG, 'cmm_main_section' );
-		add_settings_field( 'cmm_title', __( 'Page title', 'codifigata-maintenance-mode' ), array( $this, 'render_field_title' ), self::SETTINGS_SLUG, 'cmm_main_section' );
-		add_settings_field( 'cmm_message', __( 'Message', 'codifigata-maintenance-mode' ), array( $this, 'render_field_message' ), self::SETTINGS_SLUG, 'cmm_main_section' );
-		add_settings_field( 'cmm_bg_color', __( 'Background color', 'codifigata-maintenance-mode' ), array( $this, 'render_field_bg_color' ), self::SETTINGS_SLUG, 'cmm_main_section' );
-		add_settings_field( 'cmm_text_color', __( 'Text color', 'codifigata-maintenance-mode' ), array( $this, 'render_field_text_color' ), self::SETTINGS_SLUG, 'cmm_main_section' );
-		add_settings_field( 'cmm_accent_color', __( 'Accent color', 'codifigata-maintenance-mode' ), array( $this, 'render_field_accent_color' ), self::SETTINGS_SLUG, 'cmm_main_section' );
-		add_settings_field( 'cmm_allowed_roles', __( 'Allowed roles', 'codifigata-maintenance-mode' ), array( $this, 'render_field_allowed_roles' ), self::SETTINGS_SLUG, 'cmm_main_section' );
-		add_settings_field( 'cmm_bypass_ips', __( 'Allowed IP addresses', 'codifigata-maintenance-mode' ), array( $this, 'render_field_bypass_ips' ), self::SETTINGS_SLUG, 'cmm_main_section' );
-		add_settings_field( 'cmm_bypass_link', __( 'Secret preview link', 'codifigata-maintenance-mode' ), array( $this, 'render_field_bypass_link' ), self::SETTINGS_SLUG, 'cmm_main_section' );
+		add_settings_field( 'cdfg_mm_status', __( 'Maintenance mode', 'codifigata-maintenance-mode' ), array( $this, 'render_field_status' ), self::SETTINGS_SLUG, 'cdfg_mm_main_section' );
+		add_settings_field( 'cdfg_mm_schedule', __( 'Scheduled activation', 'codifigata-maintenance-mode' ), array( $this, 'render_field_schedule' ), self::SETTINGS_SLUG, 'cdfg_mm_main_section' );
+		add_settings_field( 'cdfg_mm_title', __( 'Page title', 'codifigata-maintenance-mode' ), array( $this, 'render_field_title' ), self::SETTINGS_SLUG, 'cdfg_mm_main_section' );
+		add_settings_field( 'cdfg_mm_message', __( 'Message', 'codifigata-maintenance-mode' ), array( $this, 'render_field_message' ), self::SETTINGS_SLUG, 'cdfg_mm_main_section' );
+		add_settings_field( 'cdfg_mm_bg_color', __( 'Background color', 'codifigata-maintenance-mode' ), array( $this, 'render_field_bg_color' ), self::SETTINGS_SLUG, 'cdfg_mm_main_section' );
+		add_settings_field( 'cdfg_mm_text_color', __( 'Text color', 'codifigata-maintenance-mode' ), array( $this, 'render_field_text_color' ), self::SETTINGS_SLUG, 'cdfg_mm_main_section' );
+		add_settings_field( 'cdfg_mm_accent_color', __( 'Accent color', 'codifigata-maintenance-mode' ), array( $this, 'render_field_accent_color' ), self::SETTINGS_SLUG, 'cdfg_mm_main_section' );
+		add_settings_field( 'cdfg_mm_allowed_roles', __( 'Allowed roles', 'codifigata-maintenance-mode' ), array( $this, 'render_field_allowed_roles' ), self::SETTINGS_SLUG, 'cdfg_mm_main_section' );
+		add_settings_field( 'cdfg_mm_bypass_ips', __( 'Allowed IP addresses', 'codifigata-maintenance-mode' ), array( $this, 'render_field_bypass_ips' ), self::SETTINGS_SLUG, 'cdfg_mm_main_section' );
+		add_settings_field( 'cdfg_mm_bypass_link', __( 'Secret preview link', 'codifigata-maintenance-mode' ), array( $this, 'render_field_bypass_link' ), self::SETTINGS_SLUG, 'cdfg_mm_main_section' );
 	}
 
 	/**
@@ -265,11 +279,11 @@ class CMM_Maintenance_Mode {
 				<?php esc_html_e( 'Automatically turn maintenance mode on and off on a schedule', 'codifigata-maintenance-mode' ); ?>
 			</label>
 			<p>
-				<label for="cmm_schedule_start"><?php esc_html_e( 'Start', 'codifigata-maintenance-mode' ); ?></label>
-				<input type="datetime-local" id="cmm_schedule_start" name="<?php echo esc_attr( self::OPTION_NAME ); ?>[schedule_start]" value="<?php echo esc_attr( $settings['schedule_start'] ); ?>" />
+				<label for="cdfg_mm_schedule_start"><?php esc_html_e( 'Start', 'codifigata-maintenance-mode' ); ?></label>
+				<input type="datetime-local" id="cdfg_mm_schedule_start" name="<?php echo esc_attr( self::OPTION_NAME ); ?>[schedule_start]" value="<?php echo esc_attr( $settings['schedule_start'] ); ?>" />
 				&nbsp;&nbsp;
-				<label for="cmm_schedule_end"><?php esc_html_e( 'End', 'codifigata-maintenance-mode' ); ?></label>
-				<input type="datetime-local" id="cmm_schedule_end" name="<?php echo esc_attr( self::OPTION_NAME ); ?>[schedule_end]" value="<?php echo esc_attr( $settings['schedule_end'] ); ?>" />
+				<label for="cdfg_mm_schedule_end"><?php esc_html_e( 'End', 'codifigata-maintenance-mode' ); ?></label>
+				<input type="datetime-local" id="cdfg_mm_schedule_end" name="<?php echo esc_attr( self::OPTION_NAME ); ?>[schedule_end]" value="<?php echo esc_attr( $settings['schedule_end'] ); ?>" />
 			</p>
 			<p class="description">
 				<?php esc_html_e( 'Times use the site\'s timezone (Settings → General). Leave both empty to only control the mode manually with the toggle above.', 'codifigata-maintenance-mode' ); ?>
@@ -300,7 +314,7 @@ class CMM_Maintenance_Mode {
 		$settings = $this->get_settings();
 		$default  = $this->get_default_settings();
 		printf(
-			'<input type="text" class="cmm-color-field" name="%1$s[bg_color]" value="%2$s" data-default-color="%3$s" />',
+			'<input type="text" class="cdfg-mm-color-field" name="%1$s[bg_color]" value="%2$s" data-default-color="%3$s" />',
 			esc_attr( self::OPTION_NAME ),
 			esc_attr( $settings['bg_color'] ),
 			esc_attr( $default['bg_color'] )
@@ -311,7 +325,7 @@ class CMM_Maintenance_Mode {
 		$settings = $this->get_settings();
 		$default  = $this->get_default_settings();
 		printf(
-			'<input type="text" class="cmm-color-field" name="%1$s[text_color]" value="%2$s" data-default-color="%3$s" />',
+			'<input type="text" class="cdfg-mm-color-field" name="%1$s[text_color]" value="%2$s" data-default-color="%3$s" />',
 			esc_attr( self::OPTION_NAME ),
 			esc_attr( $settings['text_color'] ),
 			esc_attr( $default['text_color'] )
@@ -322,7 +336,7 @@ class CMM_Maintenance_Mode {
 		$settings = $this->get_settings();
 		$default  = $this->get_default_settings();
 		printf(
-			'<input type="text" class="cmm-color-field" name="%1$s[accent_color]" value="%2$s" data-default-color="%3$s" />',
+			'<input type="text" class="cdfg-mm-color-field" name="%1$s[accent_color]" value="%2$s" data-default-color="%3$s" />',
 			esc_attr( self::OPTION_NAME ),
 			esc_attr( $settings['accent_color'] ),
 			esc_attr( $default['accent_color'] )
@@ -422,7 +436,7 @@ class CMM_Maintenance_Mode {
 
 		wp_enqueue_style( 'wp-color-picker' );
 		wp_enqueue_script( 'wp-color-picker' );
-		wp_add_inline_script( 'wp-color-picker', 'jQuery(function($){ $(".cmm-color-field").wpColorPicker(); });' );
+		wp_add_inline_script( 'wp-color-picker', 'jQuery(function($){ $(".cdfg-mm-color-field").wpColorPicker(); });' );
 	}
 
 	public function maybe_show_regenerated_notice() {
@@ -430,7 +444,7 @@ class CMM_Maintenance_Mode {
 			return;
 		}
 
-		if ( empty( $_GET['cmm-regenerated'] ) ) {
+		if ( empty( $_GET['cdfg-mm-regenerated'] ) ) {
 			return;
 		}
 		?>
@@ -454,7 +468,7 @@ class CMM_Maintenance_Mode {
 
 		wp_safe_redirect(
 			add_query_arg(
-				'cmm-regenerated',
+				'cdfg-mm-regenerated',
 				'1',
 				admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG )
 			)
@@ -600,7 +614,7 @@ class CMM_Maintenance_Mode {
 	 * Determina se il visitatore corrente deve vedere il sito normalmente
 	 * invece della pagina di manutenzione: richieste tecniche (REST/cron/
 	 * admin/login), amministratori, ruoli abilitati, cookie di bypass, IP
-	 * consentiti, e infine il filtro 'cmm_bypass' per estensioni esterne.
+	 * consentiti, e infine il filtro 'cdfg_mm_bypass' per estensioni esterne.
 	 */
 	private function should_bypass() {
 		if ( is_admin() || wp_doing_ajax() || wp_doing_cron() ) {
@@ -649,13 +663,13 @@ class CMM_Maintenance_Mode {
 		 *
 		 * @param bool $bypass Risultato calcolato di default (false).
 		 */
-		return apply_filters( 'cmm_bypass', false );
+		return apply_filters( 'cdfg_mm_bypass', false );
 	}
 
 	/**
 	 * IP del visitatore usato per il controllo bypass. Legge solo REMOTE_ADDR
 	 * (non header spoofabili come X-Forwarded-For); i siti dietro proxy/CDN
-	 * possono adattarlo con il filtro 'cmm_visitor_ip'.
+	 * possono adattarlo con il filtro 'cdfg_mm_visitor_ip'.
 	 */
 	private function get_visitor_ip() {
 		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
@@ -665,7 +679,7 @@ class CMM_Maintenance_Mode {
 		 *
 		 * @param string $ip IP rilevato di default (REMOTE_ADDR).
 		 */
-		return apply_filters( 'cmm_visitor_ip', $ip );
+		return apply_filters( 'cdfg_mm_visitor_ip', $ip );
 	}
 
 	private function render_maintenance_page( $settings ) {
@@ -678,7 +692,7 @@ class CMM_Maintenance_Mode {
 		 *
 		 * @param int $retry_after Secondi predefiniti (1 ora).
 		 */
-		$retry_after = (int) apply_filters( 'cmm_retry_after', HOUR_IN_SECONDS );
+		$retry_after = (int) apply_filters( 'cdfg_mm_retry_after', HOUR_IN_SECONDS );
 		if ( $retry_after > 0 ) {
 			header( 'Retry-After: ' . $retry_after );
 		}
@@ -707,15 +721,15 @@ class CMM_Maintenance_Mode {
 			padding: 24px;
 			box-sizing: border-box;
 		}
-		.cmm-wrap {
+		.cdfg-mm-wrap {
 			max-width: 560px;
 		}
-		.cmm-wrap h1 {
+		.cdfg-mm-wrap h1 {
 			font-size: 28px;
 			margin: 0 0 16px;
 			color: <?php echo esc_html( $settings['accent_color'] ); ?>;
 		}
-		.cmm-wrap p {
+		.cdfg-mm-wrap p {
 			font-size: 16px;
 			line-height: 1.6;
 			margin: 0;
@@ -723,7 +737,7 @@ class CMM_Maintenance_Mode {
 	</style>
 </head>
 <body>
-	<div class="cmm-wrap">
+	<div class="cdfg-mm-wrap">
 		<h1><?php echo esc_html( $settings['title'] ); ?></h1>
 		<p><?php echo wp_kses_post( $settings['message'] ); ?></p>
 	</div>
@@ -738,8 +752,8 @@ class CMM_Maintenance_Mode {
 		 * @param string $html     Markup HTML generato.
 		 * @param array  $settings Impostazioni correnti del plugin.
 		 */
-		echo apply_filters( 'cmm_maintenance_page_html', $html, $settings ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- markup già escapato campo per campo sopra.
+		echo apply_filters( 'cdfg_mm_maintenance_page_html', $html, $settings ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- markup già escapato campo per campo sopra.
 	}
 }
 
-new CMM_Maintenance_Mode();
+new Plugin();

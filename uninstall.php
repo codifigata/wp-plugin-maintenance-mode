@@ -12,6 +12,6 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-wp_clear_scheduled_hook( 'cmm_cron_start_maintenance' );
-wp_clear_scheduled_hook( 'cmm_cron_end_maintenance' );
-delete_option( 'cmm_settings' );
+wp_clear_scheduled_hook( 'cdfg_mm_cron_start_maintenance' );
+wp_clear_scheduled_hook( 'cdfg_mm_cron_end_maintenance' );
+delete_option( 'cdfg_mm_settings' );
