@@ -196,13 +196,13 @@ class Plugin {
 			: $defaults['message'];
 
 		$bg_color           = ! empty( $input['bg_color'] ) && is_string( $input['bg_color'] ) ? sanitize_hex_color( wp_unslash( $input['bg_color'] ) ) : '';
-		$output['bg_color'] = $bg_color ?: $defaults['bg_color'];
+		$output['bg_color'] = ! empty( $bg_color ) ? $bg_color : $defaults['bg_color'];
 
 		$text_color           = ! empty( $input['text_color'] ) && is_string( $input['text_color'] ) ? sanitize_hex_color( wp_unslash( $input['text_color'] ) ) : '';
-		$output['text_color'] = $text_color ?: $defaults['text_color'];
+		$output['text_color'] = ! empty( $text_color ) ? $text_color : $defaults['text_color'];
 
 		$accent_color           = ! empty( $input['accent_color'] ) && is_string( $input['accent_color'] ) ? sanitize_hex_color( wp_unslash( $input['accent_color'] ) ) : '';
-		$output['accent_color'] = $accent_color ?: $defaults['accent_color'];
+		$output['accent_color'] = ! empty( $accent_color ) ? $accent_color : $defaults['accent_color'];
 
 		$roles = array();
 		if ( ! empty( $input['allowed_roles'] ) && is_array( $input['allowed_roles'] ) ) {
@@ -448,11 +448,12 @@ class Plugin {
 	}
 
 	public function maybe_show_regenerated_notice() {
-		if ( ! isset( $_GET['page'] ) || self::SETTINGS_SLUG !== sanitize_key( wp_unslash( $_GET['page'] ) ) ) {
+		// Solo per decidere se mostrare un avviso di sola lettura, nessuna scrittura: non serve un nonce.
+		if ( ! isset( $_GET['page'] ) || self::SETTINGS_SLUG !== sanitize_key( wp_unslash( $_GET['page'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return;
 		}
 
-		if ( empty( $_GET['cdfg-mm-regenerated'] ) ) {
+		if ( empty( $_GET['cdfg-mm-regenerated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return;
 		}
 		?>
@@ -576,11 +577,12 @@ class Plugin {
 	 * perché setcookie() aggiorna $_COOKIE solo dal prossimo caricamento.
 	 */
 	public function maybe_set_bypass_cookie() {
-		if ( headers_sent() || ! isset( $_GET[ self::PREVIEW_QUERY_ARG ] ) ) {
+		// Link pubblico per design (va condiviso con chi non ha un account): il token stesso, verificato con hash_equals(), fa le veci del nonce.
+		if ( headers_sent() || ! isset( $_GET[ self::PREVIEW_QUERY_ARG ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return;
 		}
 
-		$token    = sanitize_text_field( wp_unslash( $_GET[ self::PREVIEW_QUERY_ARG ] ) );
+		$token    = sanitize_text_field( wp_unslash( $_GET[ self::PREVIEW_QUERY_ARG ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$settings = $this->get_settings();
 
 		if ( '' === $settings['bypass_token'] || ! hash_equals( $settings['bypass_token'], $token ) ) {
