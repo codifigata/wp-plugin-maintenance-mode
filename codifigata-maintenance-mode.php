@@ -41,6 +41,8 @@ class Plugin {
 	const SETTINGS_SLUG     = 'cdfg-mm-settings';
 	const REGEN_ACTION      = 'cdfg_mm_regenerate_token';
 	const REGEN_NONCE       = 'cdfg_mm_regenerate_token_nonce';
+	const TOGGLE_ACTION     = 'cdfg_mm_toggle_status';
+	const TOGGLE_NONCE      = 'cdfg_mm_toggle_status_nonce';
 	const BYPASS_COOKIE     = 'cdfg_mm_bypass_token';
 	const PREVIEW_QUERY_ARG = 'cdfg_mm_preview';
 	const CRON_HOOK_START   = 'cdfg_mm_cron_start_maintenance';
@@ -68,7 +70,11 @@ class Plugin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
 		add_action( 'admin_notices', array( $this, 'maybe_show_regenerated_notice' ) );
 		add_action( 'admin_post_' . self::REGEN_ACTION, array( $this, 'handle_regenerate_token' ) );
+		add_action( 'admin_post_' . self::TOGGLE_ACTION, array( $this, 'handle_toggle_status' ) );
 		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'add_settings_link' ) );
+
+		// Widget di bacheca per attivare/disattivare rapidamente.
+		add_action( 'wp_dashboard_setup', array( $this, 'add_dashboard_widget' ) );
 	}
 
 	// -------------------------------------------------------------------------
@@ -187,11 +193,14 @@ class Plugin {
 
 		$output['status'] = ! empty( $input['status'] ) ? '1' : '0';
 
-		$output['title'] = ! empty( $input['title'] ) && is_string( $input['title'] )
+		// Titolo e messaggio possono essere lasciati vuoti di proposito (pagina di
+		// manutenzione minimale, senza testo): il fallback al default scatta solo
+		// se il campo non arriva affatto, non se arriva vuoto.
+		$output['title'] = isset( $input['title'] ) && is_string( $input['title'] )
 			? sanitize_text_field( wp_unslash( $input['title'] ) )
 			: $defaults['title'];
 
-		$output['message'] = ! empty( $input['message'] ) && is_string( $input['message'] )
+		$output['message'] = isset( $input['message'] ) && is_string( $input['message'] )
 			? wp_kses_post( wp_unslash( $input['message'] ) )
 			: $defaults['message'];
 
@@ -307,6 +316,9 @@ class Plugin {
 			esc_attr( self::OPTION_NAME ),
 			esc_attr( $settings['title'] )
 		);
+		?>
+		<p class="description"><?php esc_html_e( 'Leave empty to hide the title — useful for a minimal, text-free maintenance page.', 'codifigata-maintenance-mode' ); ?></p>
+		<?php
 	}
 
 	public function render_field_message() {
@@ -316,6 +328,9 @@ class Plugin {
 			esc_attr( self::OPTION_NAME ),
 			esc_textarea( $settings['message'] )
 		);
+		?>
+		<p class="description"><?php esc_html_e( 'Leave empty to hide the message.', 'codifigata-maintenance-mode' ); ?></p>
+		<?php
 	}
 
 	public function render_field_bg_color() {
@@ -482,6 +497,70 @@ class Plugin {
 				admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG )
 			)
 		);
+		exit;
+	}
+
+	// -------------------------------------------------------------------------
+	// Widget di bacheca
+	// -------------------------------------------------------------------------
+
+	public function add_dashboard_widget() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		wp_add_dashboard_widget(
+			'cdfg_mm_dashboard_widget',
+			__( 'Maintenance Mode', 'codifigata-maintenance-mode' ),
+			array( $this, 'render_dashboard_widget' )
+		);
+	}
+
+	public function render_dashboard_widget() {
+		$settings   = $this->get_settings();
+		$is_on      = '1' === $settings['status'];
+		$toggle_url = wp_nonce_url(
+			add_query_arg( array( 'action' => self::TOGGLE_ACTION ), admin_url( 'admin-post.php' ) ),
+			self::TOGGLE_ACTION,
+			self::TOGGLE_NONCE
+		);
+		?>
+		<p>
+			<?php if ( $is_on ) : ?>
+				<strong style="color:#b32d2e;"><?php esc_html_e( 'Maintenance mode is ON.', 'codifigata-maintenance-mode' ); ?></strong>
+				<?php esc_html_e( 'Visitors currently see the maintenance page.', 'codifigata-maintenance-mode' ); ?>
+			<?php else : ?>
+				<strong style="color:#2a7a2a;"><?php esc_html_e( 'Maintenance mode is OFF.', 'codifigata-maintenance-mode' ); ?></strong>
+				<?php esc_html_e( 'The site is publicly accessible.', 'codifigata-maintenance-mode' ); ?>
+			<?php endif; ?>
+		</p>
+		<?php if ( '1' === $settings['schedule_enabled'] ) : ?>
+			<p class="description"><?php esc_html_e( 'Scheduled activation is on — the status above may change automatically.', 'codifigata-maintenance-mode' ); ?></p>
+		<?php endif; ?>
+		<p>
+			<a href="<?php echo esc_url( $toggle_url ); ?>" class="button <?php echo $is_on ? '' : 'button-primary'; ?>">
+				<?php echo $is_on ? esc_html__( 'Turn off', 'codifigata-maintenance-mode' ) : esc_html__( 'Turn on', 'codifigata-maintenance-mode' ); ?>
+			</a>
+			<a href="<?php echo esc_url( admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG ) ); ?>">
+				<?php esc_html_e( 'Manage settings', 'codifigata-maintenance-mode' ); ?>
+			</a>
+		</p>
+		<?php
+	}
+
+	public function handle_toggle_status() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You are not allowed to do this.', 'codifigata-maintenance-mode' ) );
+		}
+
+		check_admin_referer( self::TOGGLE_ACTION, self::TOGGLE_NONCE );
+
+		$settings           = wp_parse_args( get_option( self::OPTION_NAME, array() ), $this->get_default_settings() );
+		$settings['status'] = '1' === $settings['status'] ? '0' : '1';
+		update_option( self::OPTION_NAME, $settings );
+
+		$redirect = wp_get_referer();
+		wp_safe_redirect( $redirect ? $redirect : admin_url() );
 		exit;
 	}
 
@@ -716,7 +795,7 @@ class Plugin {
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title><?php echo esc_html( $settings['title'] ); ?></title>
+	<title><?php echo esc_html( '' !== $settings['title'] ? $settings['title'] : get_bloginfo( 'name' ) ); ?></title>
 	<style>
 		body {
 			margin: 0;
@@ -748,8 +827,12 @@ class Plugin {
 </head>
 <body>
 	<div class="cdfg-mm-wrap">
-		<h1><?php echo esc_html( $settings['title'] ); ?></h1>
-		<p><?php echo wp_kses_post( $settings['message'] ); ?></p>
+		<?php if ( '' !== $settings['title'] ) : ?>
+			<h1><?php echo esc_html( $settings['title'] ); ?></h1>
+		<?php endif; ?>
+		<?php if ( '' !== $settings['message'] ) : ?>
+			<p><?php echo wp_kses_post( $settings['message'] ); ?></p>
+		<?php endif; ?>
 	</div>
 </body>
 </html>
