@@ -788,6 +788,45 @@ class Plugin {
 
 		header( 'X-Robots-Tag: noindex, nofollow', true );
 
+		/*
+		 * Pagina standalone: non passa mai da wp_head(), quindi il CSS dinamico
+		 * viene comunque registrato/enqueued (handle senza src, nessuna richiesta
+		 * esterna) e stampato subito con wp_print_styles(), invece di un tag
+		 * <style> scritto a mano.
+		 */
+		$maintenance_css = '
+			body {
+				margin: 0;
+				min-height: 100vh;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background: ' . esc_html( $settings['bg_color'] ) . ';
+				color: ' . esc_html( $settings['text_color'] ) . ';
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+				text-align: center;
+				padding: 24px;
+				box-sizing: border-box;
+			}
+			.cdfg-mm-wrap {
+				max-width: 560px;
+			}
+			.cdfg-mm-wrap h1 {
+				font-size: 28px;
+				margin: 0 0 16px;
+				color: ' . esc_html( $settings['accent_color'] ) . ';
+			}
+			.cdfg-mm-wrap p {
+				font-size: 16px;
+				line-height: 1.6;
+				margin: 0;
+			}
+		';
+
+		wp_register_style( 'cdfg-mm-maintenance', false, array(), self::VERSION );
+		wp_enqueue_style( 'cdfg-mm-maintenance' );
+		wp_add_inline_style( 'cdfg-mm-maintenance', $maintenance_css );
+
 		ob_start();
 		?>
 <!DOCTYPE html>
@@ -796,34 +835,7 @@ class Plugin {
 	<meta charset="<?php bloginfo( 'charset' ); ?>" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title><?php echo esc_html( '' !== $settings['title'] ? $settings['title'] : get_bloginfo( 'name' ) ); ?></title>
-	<style>
-		body {
-			margin: 0;
-			min-height: 100vh;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			background: <?php echo esc_html( $settings['bg_color'] ); ?>;
-			color: <?php echo esc_html( $settings['text_color'] ); ?>;
-			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-			text-align: center;
-			padding: 24px;
-			box-sizing: border-box;
-		}
-		.cdfg-mm-wrap {
-			max-width: 560px;
-		}
-		.cdfg-mm-wrap h1 {
-			font-size: 28px;
-			margin: 0 0 16px;
-			color: <?php echo esc_html( $settings['accent_color'] ); ?>;
-		}
-		.cdfg-mm-wrap p {
-			font-size: 16px;
-			line-height: 1.6;
-			margin: 0;
-		}
-	</style>
+	<?php wp_print_styles( 'cdfg-mm-maintenance' ); ?>
 </head>
 <body>
 	<div class="cdfg-mm-wrap">
