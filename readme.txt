@@ -88,15 +88,9 @@ On uninstall (not on simple deactivation), the plugin removes its settings and a
 == Changelog ==
 
 = 1.0.0 =
-* First version published on WordPress.org.
 * Maintenance toggle with real 503 response and Retry-After header.
 * Customizable title and message — both can be left empty for a minimal, text-free maintenance page — plus colors.
 * Bypass by role, IP address, and secret preview link.
 * Scheduled activation/deactivation via WP-Cron.
 * Dashboard widget to check the current status and toggle maintenance mode on/off with one click.
 * Developer filters: `cdfg_mm_bypass`, `cdfg_mm_visitor_ip`, `cdfg_mm_retry_after`, `cdfg_mm_maintenance_page_html`.
-
-== Upgrade Notice ==
-
-= 1.0.0 =
-First version.
